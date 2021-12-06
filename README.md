@@ -41,9 +41,8 @@ RemoveAnimDict("amb@code_human_wander_gardener_leaf_blower@base")
 
 https://youtu.be/XLlStooJ5S4 (Laggy Video)
 
-![preview1](https://media.discordapp.net/attachments/351377961011904512/917335814948667392/unknown.png)
-![preview2](https://media.discordapp.net/attachments/351377961011904512/917335814948667392/unknown.png)
-![preview3](https://media.discordapp.net/attachments/351377961011904512/917335815846256640/unknown.png)
+![preview1](https://cdn.discordapp.com/attachments/351377961011904512/917335815498113044/unknown.png)
+![preview2](https://cdn.discordapp.com/attachments/351377961011904512/917335815846256640/unknown.png)
 
 ### Credits
 
