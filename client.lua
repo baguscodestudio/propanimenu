@@ -5,19 +5,6 @@ local index, searching, currentProp, currentBone, xpos, ypos, zpos, xrot, yrot, 
 local searchingString = ""
 local spawnedProp = nil
 
-local function DrawTextAdvanced(x, y, text)
-    SetTextFont(0)
-    SetTextScale(0.4, 0.4)
-    SetTextColour(230, 230, 230, 255)
-    SetTextDropshadow(0, 0, 0, 0, 255)
-    SetTextEdge(2, 0, 0, 0, 150)
-    SetTextDropShadow()
-    SetTextEntry("STRING")
-    SetTextCentre(1)
-    AddTextComponentString(text)
-    DrawText(x,y)
-end
-
 function SendNotification(text)
     BeginTextCommandThefeedPost('STRING')
     AddTextComponentString(text)
@@ -103,17 +90,17 @@ local function CancelAnimation()
 end
 
 function CopyClipboard()
-	local text = "local playerPed = PlayerPedId()\nlocal prop = GetHashKey("..currentProp..")\n"
+	local text = "local playerPed = PlayerPedId()\nlocal prop = GetHashKey('"..currentProp.."')\n"
 	text = text..'RequestModel(prop)\n'
 	text = text..'while not HasModelLoaded(prop) do\n'
 	text = text..'\tWait(100)\nRequestModel(prop)\nend\n'
 	text = text..'local spawnedProp = CreateObject(prop, GetEntityCoords(playerPed), true, true, true)\n'
 	text = text..'AttachEntityToEntity(spawnedProp, playerPed, GetPedBoneIndex(playerPed, '..currentBone..', '..xpos..', '..ypos..', '..zpos..', '..xrot..', '..yrot..', '..zrot..', true, true, true, false, 1, true)\n'
-	text = text..'RequestAnimDict('..Animations[index][1]..')\n'
-	text = text..'while not HasAnimDictLoaded('..Animations[index][1]..') do\n'
+	text = text..'RequestAnimDict("'..Animations[index][1]..'")\n'
+	text = text..'while not HasAnimDictLoaded("'..Animations[index][1]..'") do\n'
 	text = text..'Wait(100)\nend\n'
-	text = text..'TaskPlayAnim(playerPed, '..Animations[index][1]..', '..Animations[index][2]..', 8.0, 1.0, -1, 1)\n'
-	text = text..'RemoveAnimDict('..Animations[index][1]..')'
+	text = text..'TaskPlayAnim(playerPed, "'..Animations[index][1]..'", "'..Animations[index][2]..'", 8.0, 1.0, -1, 1)\n'
+	text = text..'RemoveAnimDict("'..Animations[index][1]..'")'
 
 	SetNuiFocus(true, true)
 	SendNUIMessage({
@@ -143,7 +130,6 @@ RegisterNUICallback('setPropData', function(data, cb)
 	yrot = tonumber(data.yrot)
 	zrot = tonumber(data.zrot)
 	if spawnedProp then
-		print(spawnedProp, xpos,ypos,zpos, xrot, yrot, zrot, GetPedBoneIndex(PlayerPedId(), currentBone))
 		AttachEntityToEntity(spawnedProp, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), currentBone), xpos, ypos, zpos, xrot, yrot, zrot, true, true, true, false, 1, true)
 	end
 	UpdateInfoText()
