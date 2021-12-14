@@ -95,11 +95,11 @@ function CopyClipboard()
 	text = text..'while not HasModelLoaded(prop) do\n'
 	text = text..'\tWait(100)\nRequestModel(prop)\nend\n'
 	text = text..'local spawnedProp = CreateObject(prop, GetEntityCoords(playerPed), true, true, true)\n'
-	text = text..'AttachEntityToEntity(spawnedProp, playerPed, GetPedBoneIndex(playerPed, '..currentBone..', '..xpos..', '..ypos..', '..zpos..', '..xrot..', '..yrot..', '..zrot..', true, true, true, false, 1, true)\n'
+	text = text..'AttachEntityToEntity(spawnedProp, playerPed, GetPedBoneIndex(playerPed, '..currentBone..'), '..xpos..', '..ypos..', '..zpos..', '..xrot..', '..yrot..', '..zrot..', true, true, true, false, 1, true)\n'
 	text = text..'RequestAnimDict("'..Animations[index][1]..'")\n'
 	text = text..'while not HasAnimDictLoaded("'..Animations[index][1]..'") do\n'
 	text = text..'Wait(100)\nend\n'
-	text = text..'TaskPlayAnim(playerPed, "'..Animations[index][1]..'", "'..Animations[index][2]..'", 8.0, 1.0, -1, 1)\n'
+	text = text..'TaskPlayAnim(playerPed, "'..Animations[index][1]..'", "'..Animations[index][2]..'", 8.0, 1.0, -1, 49)\n'
 	text = text..'RemoveAnimDict("'..Animations[index][1]..'")'
 
 	SetNuiFocus(true, true)

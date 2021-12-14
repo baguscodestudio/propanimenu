@@ -4,9 +4,9 @@ Prop and Animation developer tool
 
 ## Dependencies
 
-[**menuv**](https://github.com/ThymonA/menuv/)
+- [**menuv**](https://github.com/ThymonA/menuv/)
 
-[**nh-keyboard**](https://github.com/baguscodestudio/nh-keyboard) a fork of nerohiro version with before keyup update
+- [**nh-keyboard**](https://github.com/baguscodestudio/nh-keyboard) a fork of nerohiro version with before keyup update
 
 ## Usage
 
@@ -46,8 +46,8 @@ https://youtu.be/XLlStooJ5S4 (Laggy Video)
 
 ### Credits
 
-@[ThymonA](https://github.com/ThymonA/menuv/) for menuv
+- @[ThymonA](https://github.com/ThymonA/menuv/) for menuv
 
-@[eblio](https://github.com/eblio/animenu) for converting the animation list and basic codes for animation
+- @[eblio](https://github.com/eblio/animenu) for converting the animation list and basic codes for animation
 
-@[AnDylek](https://forum.cfx.re/t/paid-dev-tool-prop-attach-to-ped-tool/4782266) for inspiration
+- @[AnDylek](https://forum.cfx.re/t/paid-dev-tool-prop-attach-to-ped-tool/4782266) for inspiration

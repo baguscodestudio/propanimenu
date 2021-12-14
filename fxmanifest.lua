@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 
 author 'baguscodestudio'
-version '0.5.0'
+version '0.5.1'
 
 ui_page 'web/html/index.html'
 
