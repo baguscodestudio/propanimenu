@@ -11,6 +11,58 @@ function SendNotification(text)
     EndTextCommandThefeedPostTicker(true, true)
 end
 
+RotationToDirection = function(rotation)
+    -- https://github.com/Risky-Shot/new_banking/blob/main/new_banking/client/client.lua
+	local adjustedRotation =
+	{
+		x = (math.pi / 180) * rotation.x,
+		y = (math.pi / 180) * rotation.y,
+		z = (math.pi / 180) * rotation.z
+	}
+	local direction =
+	{
+		x = -math.sin(adjustedRotation.z) * math.abs(math.cos(adjustedRotation.x)),
+		y = math.cos(adjustedRotation.z) * math.abs(math.cos(adjustedRotation.x)),
+		z = math.sin(adjustedRotation.x)
+	}
+	return direction
+end
+
+RayCastGamePlayCamera = function(distance)
+    -- https://github.com/Risky-Shot/new_banking/blob/main/new_banking/client/client.lua
+    local cameraRotation = GetGameplayCamRot()
+	local cameraCoord = GetGameplayCamCoord()
+	local direction = RotationToDirection(cameraRotation)
+	local destination =
+	{
+		x = cameraCoord.x + direction.x * distance,
+		y = cameraCoord.y + direction.y * distance,
+		z = cameraCoord.z + direction.z * distance
+	}
+	local a, b, c, d, e = GetShapeTestResult(StartShapeTestRay(cameraCoord.x, cameraCoord.y, cameraCoord.z, destination.x, destination.y, destination.z, -1, PlayerPedId(), 0))
+	return b, c, e
+end
+
+function DrawText3D(x, y, z, text, scale, r, g, b, a) 
+    local onScreen, _x, _y = World3dToScreen2d(x, y, z) 
+    local pX, pY, pZ = table.unpack(GetGameplayCamCoords()) 
+	local dist = #(vector3(pX,pY,pZ) - vector3(x,y,z))
+	local scale = (1/dist)*2
+	local fov = (1/GetGameplayCamFov())*100
+	local scale = scale * fov
+	if onScreen then
+		SetTextScale(0.0*scale, 0.50*scale) 
+		SetTextFont(0) 
+		SetTextProportional(1) 
+		SetTextEntry("STRING") 
+		SetTextCentre(true) 
+		SetTextOutline()
+		SetTextColour(r, g, b, a) 
+		AddTextComponentString(text) 
+		DrawText(_x, _y) 
+	end
+end
+
 local function GoUpInAnimations(deepness)
 	deepness = deepness or 1
 
@@ -73,15 +125,10 @@ local function PlayAnimation()
 end
 
 local function SearchAnimation()
-	local keyboard, anim = exports["nh-keyboard"]:Keyboard({
-        header = "Animation", 
-        rows = {"Search string"}
-    })
-    if keyboard then
-        if anim then
-			searchingString = anim:lower()
-			searching = searchingString ~= "" and searchingString ~= nil
-        end
+	local data = exports.ox_inventory:Keyboard("Animation", {"Search string"})
+    if data then
+		searchingString = data[1]:lower()
+		searching = searchingString ~= "" and searchingString ~= nil
     end
 end
 
@@ -267,4 +314,32 @@ RegisterCommand('propanimation', function()
 	menu:On('close', function()
 		isOpen = false
 	end)
+end)
+
+RegisterCommand('raycastView', function()
+	casting = true
+	exports['hud']:displayHelp('Tekan E untuk berhenti raycast')
+	while casting do
+		local _ped = PlayerPedId()
+		local _coords = GetEntityCoords(_ped)
+		local hit, coords, entity = RayCastGamePlayCamera(1000.0)
+		
+		DrawLine(_coords, coords, 255, 0, 0, 255)
+		
+		local text = 'x:'..coords.x..'\ny:'..coords.y..'\nz:'..coords.z
+		if hit == 1 and GetEntityType(entity) ~= 0 and IsEntityAnObject(entity) then
+		 	entity = GetEntityModel(entity)
+		end
+		text = text..'\nentity:'..entity
+
+		DrawText3D(coords.x, coords.y, coords.z, text, 0.10, 255, 255, 255, 255)
+		
+		if IsControlJustReleased(0, 38) then
+			exports['hud']:closeHelp()
+			casting = false
+		elseif IsControlJustReleased(0,73) then
+			print(text)
+		end
+		Wait(5)
+	end
 end)
