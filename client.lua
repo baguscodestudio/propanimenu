@@ -318,7 +318,7 @@ end)
 
 RegisterCommand('raycastView', function()
 	casting = true
-	exports['hud']:displayHelp('Tekan E untuk berhenti raycast')
+	exports['bcs_hud']:displayHelp('Tekan E untuk berhenti raycast')
 	while casting do
 		local _ped = PlayerPedId()
 		local _coords = GetEntityCoords(_ped)
@@ -335,7 +335,7 @@ RegisterCommand('raycastView', function()
 		DrawText3D(coords.x, coords.y, coords.z, text, 0.10, 255, 255, 255, 255)
 		
 		if IsControlJustReleased(0, 38) then
-			exports['hud']:closeHelp()
+			exports['bcs_hud']:closeHelp()
 			casting = false
 		elseif IsControlJustReleased(0,73) then
 			print(text)
