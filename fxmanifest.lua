@@ -4,16 +4,17 @@ game 'gta5'
 author 'baguscodestudio'
 version '0.5.1'
 
-ui_page 'web/html/index.html'
+ui_page 'web/dist/index.html'
 
 files {
-    'web/html/index.html',
-    'web/html/assets/*.js',
-    'web/html/assets/*.css'
+    'web/dist/index.html',
+    'web/dist/assets/*.js',
+    'web/dist/assets/*.css'
 }
 
 client_scripts {
-    '@menuv/menuv.lua',
+    '@ox_lib/init.lua',
     'animations.lua',
-    'client.lua'
+    'props.lua',
+    'client.lua',
 }

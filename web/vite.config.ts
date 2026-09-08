@@ -1,11 +1,31 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import tailwindcss from '@tailwindcss/vite';
+import path from 'path';
+import { exec } from 'child_process';
 
-// https://vitejs.dev/config/
+const runPostProcess = () => {
+    return {
+        name: 'run-post-process',
+        closeBundle() {
+            exec('node post-process-css.mjs', (err, stdout) => {
+                if (err) {
+                    console.error('Error running post-process-css:', err);
+                    return;
+                }
+                if (stdout) console.log(stdout.trim());
+            });
+        }
+    };
+};
+
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  base: './',
-  build: {
-    outDir: './html'
-  }
-})
+    plugins: [svelte(), tailwindcss(), runPostProcess()],
+    resolve: {
+        alias: {
+            $lib: path.resolve('./src/lib'),
+        },
+    },
+    base: './',
+});
