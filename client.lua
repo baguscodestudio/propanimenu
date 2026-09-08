@@ -1,6 +1,45 @@
 ---@diagnostic disable-next-line
 lib, cache = lib, cache
 local object, model, propCoords, propRotation, bone, anim = nil, '', nil, nil, 0, nil
+local cam = nil
+local cameraAngle = 0.0
+local cameraDistance = 2.5
+local cameraHeight = 0.3
+local disableScroll = false
+
+function UpdateCam()
+	if not cam or not DoesCamExist(cam) then return end
+	local targetCoords = object and DoesEntityExist(object) and GetEntityCoords(object) or GetEntityCoords(cache.ped)
+	local offsetX = math.cos(cameraAngle) * cameraDistance
+	local offsetY = math.sin(cameraAngle) * cameraDistance
+	local offsetZ = cameraHeight
+
+	SetCamCoord(cam, targetCoords.x + offsetX, targetCoords.y + offsetY, targetCoords.z + offsetZ)
+	PointCamAtCoord(cam, targetCoords.x, targetCoords.y, targetCoords.z + (object and 0.0 or 0.3))
+end
+
+function StartCam()
+	if cam and DoesCamExist(cam) then
+		DestroyCam(cam, false)
+	end
+	local heading = math.rad(GetEntityHeading(cache.ped) + 90.0)
+	cameraAngle = heading
+	cameraDistance = 2.5
+	cameraHeight = 0.3
+
+	cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+	SetCamActive(cam, true)
+	RenderScriptCams(true, true, 500, true, true)
+	UpdateCam()
+end
+
+function StopCam()
+	if cam and DoesCamExist(cam) then
+		RenderScriptCams(false, true, 500, true, true)
+		DestroyCam(cam, false)
+		cam = nil
+	end
+end
 
 function HelpText(show, message)
 	if show then
@@ -35,6 +74,8 @@ function DrawText3D(x, y, z, text, scale, r, g, b, a)
 end
 
 function Stop()
+	StopCam()
+	disableScroll = false
 	if object and DoesEntityExist(object) then
 		DeleteEntity(object)
 	end
@@ -55,6 +96,7 @@ end, false)
 
 function SetVisible(value)
 	SetNuiFocus(value, value)
+	SetNuiFocusKeepInput(value)
 	SendNUIMessage({
 		action = 'setVisible',
 		data = value,
@@ -72,12 +114,60 @@ end)
 RegisterCommand("propanimation", function()
 	Visible = not Visible
 	SetVisible(Visible)
+
+	if Visible then
+		StartCam()
+
+		HelpText(true, '[Scroll] Zoom  \n[Right Click] Rotate')
+		while Visible do
+			if cam and DoesCamExist(cam) then
+				DisableAllControlActions(0)
+
+				if not disableScroll then
+					local zoomSpeed = 0.3
+					if IsDisabledControlJustPressed(0, 15) then
+						cameraDistance = math.max(cameraDistance - zoomSpeed, 0.5)
+						UpdateCam()
+					elseif IsDisabledControlJustPressed(0, 14) then
+						cameraDistance = math.min(cameraDistance + zoomSpeed, 10.0)
+						UpdateCam()
+					end
+				end
+
+				if IsDisabledControlPressed(0, 25) then
+					EnableControlAction(0, 1, true)
+					EnableControlAction(0, 2, true)
+					local mouseX = GetDisabledControlNormal(0, 1)
+					local mouseY = GetDisabledControlNormal(0, 2)
+
+					if math.abs(mouseX) > 0.001 then
+						cameraAngle = cameraAngle + mouseX * 0.03 * 20
+					end
+
+					if math.abs(mouseY) > 0.001 then
+						cameraHeight = math.max(-1.5, math.min(2.5, cameraHeight - mouseY * 0.03 * 40))
+					end
+
+					UpdateCam()
+				end
+
+				Wait(0)
+			end
+		end
+
+		HelpText(false)
+	end
 end, false)
 
 RegisterNuiCallback("close", function(data, cb)
 	Visible = false
 	SetVisible(false)
 	Stop()
+	cb(true)
+end)
+
+RegisterNuiCallback("disableScroll", function(data, cb)
+	disableScroll = data == true
 	cb(true)
 end)
 
@@ -95,7 +185,7 @@ RegisterNuiCallback("setData", function(data, cb)
 	bone = data.bone
 	anim = data.anim
 
-	if not object or model ~= data.model then
+	if not object or model ~= data.model and data.model ~= "" then
 		model = data.model
 
 		if object and DoesEntityExist(object) then
@@ -111,6 +201,8 @@ RegisterNuiCallback("setData", function(data, cb)
 		AttachEntityToEntity(object, cache.ped, GetPedBoneIndex(cache.ped, bone), propCoords.x, propCoords.y,
 			propCoords.z, propRotation.x, propRotation.y, propRotation.z, true, true, true, false, 1, true)
 	end
+
+	UpdateCam()
 
 	cb(true)
 end)

@@ -2,6 +2,7 @@
     import { buttonVariants } from '$lib/components/ui/button';
     import { Input } from '$lib/components/ui/input';
     import * as Popover from '$lib/components/ui/popover';
+    import { fetchNui } from '$lib/fetch-nui';
     import { cn } from '$lib/utils';
     import { Check, ChevronsUpDown } from 'lucide-svelte';
 
@@ -110,7 +111,12 @@
         <ChevronsUpDown class="ml-2 size-3.5 shrink-0 opacity-50" />
     </Popover.Trigger>
 
-    <Popover.Content class="min-w-44 p-1 z-50" sideOffset={4}>
+    <Popover.Content
+        class="min-w-44 p-1 z-50"
+        sideOffset={4}
+        onmouseenter={() => fetchNui('disableScroll', true)}
+        onmouseleave={() => fetchNui('disableScroll', false)}
+    >
         <Input bind:value={search} placeholder={searchPlaceholder} />
 
         <div

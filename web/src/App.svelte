@@ -30,6 +30,11 @@
     let rotStep = $state(1.0);
     let showCopyDialog = $state(false);
 
+    const disableScroll = (disable: boolean) => {
+        console.log(disable);
+        fetchNui('disableScroll', disable);
+    };
+
     useNuiEvent<boolean>('setVisible', (data) => {
         appState.setVisible(data);
     });
@@ -92,7 +97,11 @@
 <svelte:window onkeydown={handleKeyDown} />
 
 {#if appState.visible}
-    <Card class={cn('absolute top-1/2 left-10 -translate-y-1/2', 'w-100')}>
+    <Card
+        class="absolute top-1/2 left-10 -translate-y-1/2 w-100"
+        onmouseenter={() => disableScroll(true)}
+        onmouseleave={() => disableScroll(false)}
+    >
         <CardHeader class="flex flex-row items-center justify-between pb-2">
             <div>
                 <CardTitle>Prop Menu</CardTitle>
@@ -137,7 +146,9 @@
                 searchPlaceholder="Search bone..."
             />
 
-            <div class="flex items-center justify-between text-xs text-muted-foreground">
+            <div
+                class="flex items-center justify-between text-xs text-muted-foreground"
+            >
                 <span>Coords</span>
                 <div class="flex items-center gap-1.5">
                     <span>Step:</span>
@@ -161,7 +172,9 @@
                 {/each}
             </div>
 
-            <div class="flex items-center justify-between text-xs text-muted-foreground">
+            <div
+                class="flex items-center justify-between text-xs text-muted-foreground"
+            >
                 <span>Rotation</span>
                 <div class="flex items-center gap-1.5">
                     <span>Step:</span>
@@ -214,4 +227,3 @@
         {rot}
     />
 {/if}
-
